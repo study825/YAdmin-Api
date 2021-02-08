@@ -12,6 +12,7 @@ use App\Http\Requests\Admin\Role\UpdateRequest;
 use App\Http\Response\ApiCode;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\RoleHasPermission;
 use App\Notifications\RoleChange;
 use Exception;
 use Illuminate\Http\Request;
@@ -32,11 +33,11 @@ class RoleController extends Controller
         $id = $request->post('id', 0);
         try {
             $role = Role::whereId($id)->first();
-            $permissions = $role->permissions;
+
+            $permissions = RoleHasPermission::query()->where('role_id', '=', $role->id)->get();
             $role->users;
-            $permissionIdList = $permissions->mapWithKeys(function ($permission, $key) {
-                return [$key => $permission->id];
-            });
+            $permissionIdList = $permissions->pluck('permission_id');
+
             $role->permissionIdList = $permissionIdList;
             return ResponseBuilder::asSuccess(ApiCode::HTTP_OK)
                 ->withHttpCode(ApiCode::HTTP_OK)
@@ -168,12 +169,15 @@ class RoleController extends Controller
             Permission::whereIn('id', $validated['permissions'])->get() :
             [];
         $role->syncPermissions($permissions);
+
         activity()
             ->useLog('role')
             ->performedOn($role)
             ->causedBy($request->user())
             ->withProperties($validated)
             ->log('update permissions');
+
+
         return ResponseBuilder::asSuccess(ApiCode::HTTP_OK)
             ->withHttpCode(ApiCode::HTTP_OK)
             ->withData($role)
