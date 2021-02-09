@@ -63,12 +63,6 @@ Route::middleware(['lang'])->prefix('admin')->name('admin.')->group(function () 
             Route::post('role', [RoleController::class, 'role'])->middleware('permission:role.role');
             Route::post('roles', [RoleController::class, 'roles'])->middleware('permission:role.roles');
             Route::post('role/all', [RoleController::class, 'allRoles'])->middleware('permission:role.roles');
-            // 用户
-            Route::post('user/create', [UserController::class, 'create'])->middleware('permission:user.create');
-            Route::post('user/update', [UserController::class, 'update'])->middleware('permission:user.update');
-            Route::post('user/delete', [UserController::class, 'delete'])->middleware('permission:user.delete');
-            Route::post('user', [UserController::class, 'user'])->middleware('permission:user.user');
-            Route::post('users', [UserController::class, 'users'])->middleware('permission:user.users');
             // 管理员
             Route::post('admin/create', [AdminController::class, 'create'])->middleware('permission:admin.create');
             Route::post('admin/update', [AdminController::class, 'update'])->middleware('permission:admin.update');

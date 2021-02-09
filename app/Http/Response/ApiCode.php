@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Response;
-
 
 use Kayex\HttpCodes;
 
