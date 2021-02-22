@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -77,5 +76,7 @@ Route::middleware(['lang'])->prefix('admin')->name('admin.')->group(function () 
                 ->middleware('permission:activeLog.activeLogs');
         });
     });
+    Route::post('websocket', [\App\Http\Controllers\Admin\WebsocketController::class, 'push']);
+    Route::post('notice', [\App\Http\Controllers\Admin\WebsocketController::class, 'notice']);
 });
 
