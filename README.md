@@ -6,7 +6,7 @@
 - LaravelS 3.7.16
 - Laravel Framework 6.20.16
 
-#### 运行
+#### 运行方式(一)
 - 操作命令： `php bin/laravels {start|stop|restart|reload|info|help}`。
 
 | 命令 | 说明 |
@@ -17,3 +17,9 @@
 | reload | 平滑重启所有Task/Worker/Timer进程(这些进程内包含了你的业务代码)，并触发自定义进程的`onReload`方法，不会重启Master/Manger进程；修改`config/laravels.php`后，你`只有`调用`restart`来完成重启 |
 | info | 显示组件的版本信息 |
 | help | 显示帮助信息 |
+
+#### 运行方式(二)
+- php artisan serve
+
+#### 运行方式(三)
+- Nginx or apache

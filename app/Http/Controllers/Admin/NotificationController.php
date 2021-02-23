@@ -6,27 +6,34 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Notification\GetListRequest;
 use App\Http\Requests\Admin\Notification\SendRequest;
 use App\Http\Response\ApiCode;
+use App\Http\Services\NoticeService;
 use App\Models\Admin;
-use App\Models\DatabaseNotification;
-use App\Notifications\Message;
+use App\Models\Notification;
+use App\Notifications\InvoicePaid;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Messages\DatabaseMessage;
+use Illuminate\Notifications\Messages\SimpleMessage;
 use Illuminate\Support\Facades\Auth;
 use MarcinOrlowski\ResponseBuilder\ResponseBuilder;
 use Symfony\Component\HttpFoundation\Response;
 
 class NotificationController extends Controller
 {
+    protected $noticeService;
+
     /** @var Admin */
     private $user;
 
     /**
      * NotificationController constructor.
      */
-    public function __construct()
+    public function __construct(NoticeService $noticeService)
     {
         $this->middleware('auth:admin');
         /** @var Admin */
         $this->user = Auth::guard('admin')->user();
+
+        $this->noticeService = $noticeService;
     }
 
     /**
@@ -38,7 +45,9 @@ class NotificationController extends Controller
     public function notifications(GetListRequest $request): Response
     {
         $validated = $request->validated();
-        $data = DatabaseNotification::getList($this->user, $validated);
+
+        $data = Notification::getList($this->user, $validated);
+
         return ResponseBuilder::asSuccess(ApiCode::HTTP_OK)
             ->withHttpCode(ApiCode::HTTP_OK)
             ->withData($data)
@@ -129,7 +138,7 @@ class NotificationController extends Controller
         }
 
         $adminModel->get()->each(function ($admin) use ($validated) {
-            $admin->notify(new Message([
+            $admin->notify(new InvoicePaid([
                 'form' => $this->user->name,
                 'message' => $validated['message']
             ]));

@@ -4,19 +4,19 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class PermissionChange extends Notification implements ShouldQueue
+class InvoicePaid extends Notification
 {
     use Queueable;
 
-    public $data;
+    protected $data;
 
     /**
-     * Create a new notification instance.
+     * InvoicePaid constructor.
      *
-     * @param  mixed  $data
-     * @return void
+     * @param $data
      */
     public function __construct($data)
     {
@@ -35,15 +35,17 @@ class PermissionChange extends Notification implements ShouldQueue
     }
 
     /**
-     * 确定哪些队列应该被通知频道使用。
+     * Get the mail representation of the notification.
      *
-     * @return array
+     * @param  mixed  $notifiable
+     * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function viaQueues()
+    public function toMail($notifiable)
     {
-        return [
-            'database' => 'notification',
-        ];
+        return (new MailMessage)
+                    ->line('The introduction to the notification.')
+                    ->action('Notification Action', url('/'))
+                    ->line('Thank you for using our application!');
     }
 
     /**
@@ -54,9 +56,6 @@ class PermissionChange extends Notification implements ShouldQueue
      */
     public function toArray($notifiable)
     {
-        return [
-            'form' => 'system',
-            'message' => __('message.permission.change'),
-        ];
+        return $this->data;
     }
 }
