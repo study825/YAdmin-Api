@@ -11,8 +11,6 @@ use App\Models\Admin;
 use App\Models\Notification;
 use App\Notifications\InvoicePaid;
 use Illuminate\Http\Request;
-use Illuminate\Notifications\Messages\DatabaseMessage;
-use Illuminate\Notifications\Messages\SimpleMessage;
 use Illuminate\Support\Facades\Auth;
 use MarcinOrlowski\ResponseBuilder\ResponseBuilder;
 use Symfony\Component\HttpFoundation\Response;
@@ -64,7 +62,7 @@ class NotificationController extends Controller
     public function notification(Request $request): Response
     {
         $id = $request->post('id', '');
-        $notification = DatabaseNotification::whereId($id)
+        $notification = Notification::whereId($id)
             ->whereNotifiableId($this->user->id)
             ->select([
                 'id',
