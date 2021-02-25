@@ -14,29 +14,68 @@ class WebSocketService implements WebSocketHandlerInterface
     public function __construct()
     {
     }
-    // public function onHandShake(Request $request, Response $response)
-    // {
-    // Custom handshake: https://www.swoole.co.uk/docs/modules/swoole-websocket-server-on-handshake
-    // The onOpen event will be triggered automatically after a successful handshake
-    // }
+
     public function onOpen(Server $server, Request $request)
     {
-        // Before the onOpen event is triggered, the HTTP request to establish the WebSocket has passed the Laravel route,
-        // so Laravel's Request, Auth information are readable, Session is readable and writable, but only in the onOpen event.
-        // \Log::info('New WebSocket connection', [$request->fd, request()->all(), session()->getId(), session('xxx'), session(['yyy' => time()])]);
-        // The exceptions thrown here will be caught by the upper layer and recorded in the Swoole log. Developers need to try/catch manually.
-        $server->push($request->fd, 'Welcome to LaravelS');
+        $clientList = $server->getClientList(0);
+
+        $temp = [];
+        //通知所有客户端
+        if ($clientList) {
+            foreach ($clientList as $fd) {
+                if (0 != $server->getClientInfo($fd)['websocket_status']) {
+                    $temp[] = $fd;
+                }
+            }
+
+            foreach ($temp as $fd) {
+                if (0 != $server->getClientInfo($fd)['websocket_status']) {
+                    $server->push($fd, count($temp));
+                }
+            }
+        }
+
+
     }
 
     public function onMessage(Server $server, Frame $frame)
     {
         // \Log::info('Received message', [$frame->fd, $frame->data, $frame->opcode, $frame->finish]);
         // The exceptions thrown here will be caught by the upper layer and recorded in the Swoole log. Developers need to try/catch manually.
-        $server->push($frame->fd, $frame->fd.date('Y-m-d H:i:s'));
+
+//        $clientList = $server->getClientList(0);
+//        $server->push($frame->fd, count($clientList));
     }
 
     public function onClose(Server $server, $fd, $reactorId)
     {
-        // The exceptions thrown here will be caught by the upper layer and recorded in the Swoole log. Developers need to try/catch manually.
+        $clientList = $server->getClientList(0);
+
+        //通知所有客户端
+        if ($clientList) {
+            $temp = [];
+
+            foreach ($clientList as $fd) {
+                if (0 != $server->getClientInfo($fd)['websocket_status']) {
+                    $temp[] = $fd;
+                }
+            }
+
+
+            $clientList = array_filter($temp, function ($item) use ($fd) {
+                if ($item == $fd) {
+                    return false;
+                }
+                return true;
+            });
+
+            var_dump($clientList);
+            //通知所有客户端
+            if ($clientList) {
+                foreach ($clientList as $client) {
+                    $server->push($client, count($clientList));
+                }
+            }
+        }
     }
 }
