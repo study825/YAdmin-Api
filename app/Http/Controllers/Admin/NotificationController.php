@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Notification\GetListRequest;
 use App\Http\Requests\Admin\Notification\SendRequest;
 use App\Http\Response\ApiCode;
-use App\Http\Services\NoticeService;
 use App\Models\Admin;
 use App\Models\Notification;
 use App\Notifications\InvoicePaid;
@@ -17,21 +16,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 class NotificationController extends Controller
 {
-    protected $noticeService;
-
     /** @var Admin */
     private $user;
 
     /**
      * NotificationController constructor.
      */
-    public function __construct(NoticeService $noticeService)
+    public function __construct()
     {
         $this->middleware('auth:admin');
         /** @var Admin */
         $this->user = Auth::guard('admin')->user();
-
-        $this->noticeService = $noticeService;
     }
 
     /**
