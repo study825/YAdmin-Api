@@ -1,6 +1,15 @@
 ## YAdmin-后台管理系统
 > YAdmin管理后台，包含登录、权限管理、站内信等功能。项目代码简练，逻辑清晰明了。可以基于该管理后台，开发"业务系统"，节省开发时间。
 
+#### 安装
+- composer install
+- cp .env.example .env
+- php artisan key:generate
+- php artisan jwt:secret
+- php artisan migrate
+- php artisan db:seed
+- php artisan storage:link (符号连接)
+
 #### 依赖
 - PHP7.2
 - Swoole 4.6.0
